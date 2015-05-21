@@ -1,31 +1,35 @@
 #!/usr/bin/env python
 
-import pandas as pd
-import numpy as np
 from biom.parse import load_table
 from biom.util import biom_open
-import biom.table as table
 import sys
-from optparse import OptionParser
+import argparse
+import os.path
 
-parser = OptionParser()
-parser.add_option("-f", "--file", dest="filename",
-                  help="write report to FILE", metavar="FILE")
-parser.add_option("-q", "--quiet",
-                  action="store_false", dest="verbose", default=True,
-                  help="don't print status messages to stdout")
-(options, args) = parser.parse_args()
+parser = argparse.ArgumentParser(description='This is a python script to relativize biom tables')
 
+def file_choices(choices, fname):
+	ext = os.path.splitext(fname)[1][1:]
+	if ext not in choices:
+		parser.error('file must be biom format')
+	return fname
 
-fn = sys.argv[1]
+parser.add_argument('-i', type=lambda s:file_choices(('biom','tab'),s), help='Input biom file', action='store', required = True)
 
-print '\n' '	Input file: ' + sys.argv[1]
+if len(sys.argv)<=1:
+	parser.print_help()
+	sys.exit(1)
 
-t = load_table(fn)
+results = parser.parse_args()
+
+print '\nInput file:', results.i
+out = results.i[:-5] + '_relativized.biom'
+	
+t = load_table(results.i)
 normed = t.norm(axis='sample', inplace=False)
-out = fn[:-5] + '_relativized.biom' '\n'
+
 
 with biom_open(out, 'w') as f:
 	normed.to_hdf5(f, 'example')
 
-print '\n' '	Success!' '\n' '	Output file: ' + out
+print '\n\tSuccess!\n\tOutput file: ' + out + '\n'
