@@ -27,7 +27,7 @@ Exiting."
 
 	emptycount=`grep -B 1 -e "^$" $input | grep -ce "^@"`
 
-	if [[ "$emptycount" != 0 ]]; then
+	if [[ "$emptycount" -ge "1" ]]; then
 	echo "
 Filtering $emptycount empty fastq records from input files."
 		if [[ "$fqext" != "fastq" ]]; then
@@ -47,7 +47,7 @@ Filtering $emptycount empty fastq records from input files."
 Done.  Filter associated files against the empties list:
 filter_fasta.pt -f input.fasta -o output -s $empties -n
 "
-	elif [[ "emptycount" -ge "1" ]]; then
+	elif [[ "$emptycount" -eq "0" ]]; then
 	echo "
 No empty records found.  No lines were removed."
 	fi
