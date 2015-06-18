@@ -13,7 +13,7 @@ empties="$fqname.empty_records.txt"
 
 ## Test for inputs and outputs
 
-	if [[ ! -f "$input" ]]; then
+	if [[ ! -f $input ]]; then
 	echo "
 Supplied input not found: $input
 Exiting."
@@ -25,9 +25,9 @@ Exiting."
 
 ## Test for empty records and filter if necessary
 
-	emptycount=`grep -B 1 -e "^$" $input | grep -ce "^@"`
+	emptycount=`grep -B 1 -e "^$" $input | grep -e "^@" | wc -l`
 
-	if [[ "$emptycount" -ge "1" ]]; then
+	if [[ $emptycount != 0 ]]; then
 	echo "
 Filtering $emptycount empty fastq records from input files."
 		if [[ "$fqext" != "fastq" ]]; then
@@ -47,7 +47,7 @@ Filtering $emptycount empty fastq records from input files."
 Done.  Filter associated files against the empties list:
 filter_fasta.pt -f input.fasta -o output -s $empties -n
 "
-	elif [[ "$emptycount" -eq "0" ]]; then
+	elif [[ $emptycount == 0 ]]; then
 	echo "
 No empty records found.  No lines were removed."
 	fi
